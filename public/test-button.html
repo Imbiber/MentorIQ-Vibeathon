@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Button Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #2563eb; }
+        .loading { opacity: 0.5; cursor: not-allowed; }
+        #result { margin: 20px 0; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Calendar Button Test</h1>
+    
+    <button id="connectBtn" onclick="testConnect()">Schedule in Calendar</button>
+    <button id="addBtn" onclick="testAddToCalendar()" disabled>Add to Calendar</button>
+    
+    <div id="result"></div>
+
+    <script>
+        let isConnected = false;
+        let isScheduling = false;
+
+        function testConnect() {
+            console.log('🗓️ Connect button clicked!');
+            const btn = document.getElementById('connectBtn');
+            const result = document.getElementById('result');
+            
+            btn.textContent = 'Connecting...';
+            btn.classList.add('loading');
+            
+            result.innerHTML = '<p style="color: blue;">Testing connection...</p>';
+            
+            // Simulate connection
+            setTimeout(() => {
+                isConnected = true;
+                btn.textContent = 'Connected ✓';
+                btn.disabled = true;
+                btn.style.background = '#10b981';
+                
+                document.getElementById('addBtn').disabled = false;
+                result.innerHTML = '<p style="color: green;">✅ Connected! Now click "Add to Calendar"</p>';
+            }, 1500);
+        }
+
+        function testAddToCalendar() {
+            console.log('🔥 Add to Calendar button clicked!');
+            const btn = document.getElementById('addBtn');
+            const result = document.getElementById('result');
+            
+            if (isScheduling) {
+                console.log('Already scheduling, ignoring click');
+                return;
+            }
+            
+            isScheduling = true;
+            btn.textContent = 'Scheduling...';
+            btn.classList.add('loading');
+            
+            result.innerHTML = '<p style="color: blue;">Creating calendar events...</p>';
+            
+            // Simulate calendar creation
+            setTimeout(() => {
+                btn.textContent = 'Events Created ✓';
+                btn.disabled = true;
+                btn.style.background = '#10b981';
+                
+                result.innerHTML = '<p style="color: green;">🎉 Success! 3 events added to calendar!</p>';
+                isScheduling = false;
+            }, 2000);
+        }
+
+        // Test localStorage
+        console.log('Testing localStorage:');
+        localStorage.setItem('test_token', 'demo123');
+        console.log('Set token:', localStorage.getItem('test_token'));
+        
+        // Test environment variables
+        console.log('Environment check:');
+        console.log('Location:', window.location.origin);
+    </script>
+</body>
+</html>

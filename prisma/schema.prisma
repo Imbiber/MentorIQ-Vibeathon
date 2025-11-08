@@ -1,0 +1,166 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String
+  descopeUserId     String   @unique
+  profileData       Json?    // Store personality type, learning preferences, etc.
+  implementationHistory Json? // Track past success patterns
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  meetings          Meeting[]
+  actions           Action[]
+  progressTracking  ProgressTracking[]
+
+  @@map("users")
+}
+
+model Meeting {
+  id              String   @id @default(cuid())
+  userId          String
+  title           String?
+  description     String?
+  audioFilePath   String
+  originalFileName String
+  fileSize        Int
+  duration        Int?     // in seconds
+  participants    String[] // Array of participant names
+  meetingType     String   @default("mentor_session") // mentor_session, coaching, team_meeting, etc.
+  
+  // Processing results
+  transcription   Json?    // Raw transcription data
+  insights        Json?    // Extracted insights from AI
+  actionPlan      Json?    // Generated action plan
+  
+  // Metadata
+  processedAt     DateTime?
+  processingStatus String   @default("pending") // pending, processing, completed, failed
+  confidence      Float?   // Overall confidence score
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actions         Action[]
+
+  @@map("meetings")
+}
+
+model Action {
+  id                  String   @id @default(cuid())
+  userId              String
+  meetingId           String
+  
+  // Action details
+  title               String
+  description         String
+  category            String   // skill_development, networking, career_planning, etc.
+  priority            Int      @default(1) // 1 = highest, 5 = lowest
+  estimatedTime       String?  // "2 hours", "ongoing", etc.
+  difficulty          String   @default("medium") // low, medium, high
+  
+  // Implementation
+  status              String   @default("pending") // pending, in_progress, completed, deferred, cancelled
+  dueDate             DateTime?
+  completedAt         DateTime?
+  successProbability  Float?   // AI-predicted likelihood of completion
+  
+  // Behavior tracking
+  implementationNotes String?
+  actualTimeSpent     String?
+  successRating       Int?     // 1-5 user rating of how well it went
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meeting             Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  progressTracking    ProgressTracking[]
+
+  @@map("actions")
+}
+
+model ProgressTracking {
+  id          String   @id @default(cuid())
+  userId      String
+  actionId    String
+  
+  // Progress data
+  progressType    String   // checkin, milestone, completion, setback
+  progressValue   Float?   // 0.0 to 1.0 for percentage completion
+  notes           String?
+  mood            Int?     // 1-5 mood/motivation rating
+  confidence      Int?     // 1-5 confidence rating
+  
+  // Context
+  trackingMethod  String   // manual, calendar_detected, integration_sync
+  metadata        Json?    // Additional data from integrations
+  
+  createdAt       DateTime @default(now())
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action          Action   @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  @@map("progress_tracking")
+}
+
+model Integration {
+  id            String   @id @default(cuid())
+  userId        String
+  service       String   // google_calendar, notion, slack, etc.
+  accessToken   String   // Encrypted token from Descope
+  refreshToken  String?
+  tokenExpiry   DateTime?
+  isActive      Boolean  @default(true)
+  lastSyncAt    DateTime?
+  syncFrequency String   @default("daily") // manual, hourly, daily, weekly
+  
+  // Integration-specific settings
+  settings      Json?    // Service-specific configuration
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, service])
+  @@map("integrations")
+}
+
+model BehaviorPattern {
+  id            String   @id @default(cuid())
+  userId        String
+  
+  // Pattern identification
+  patternType   String   // implementation_style, failure_tendency, motivation_trigger, etc.
+  pattern       String   // Description of the pattern
+  confidence    Float    // How confident we are in this pattern
+  
+  // Evidence
+  sampleSize    Int      // Number of data points supporting this pattern
+  successRate   Float?   // Success rate when this pattern is present
+  lastDetected  DateTime @default(now())
+  
+  // Pattern metadata
+  tags          String[] // Keywords for pattern categorization
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, patternType, pattern])
+  @@map("behavior_patterns")
+}

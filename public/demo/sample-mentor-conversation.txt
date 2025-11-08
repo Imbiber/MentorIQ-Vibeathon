@@ -1,0 +1,74 @@
+# Sample Mentor Conversation Transcript (Demo Audio)
+
+This file represents the content that would be extracted from a demo audio recording.
+For the hackathon demo, you can upload any audio file and it will process this conversation content.
+
+## Conversation Content:
+
+**Sarah (Mentor):** So how has your time management been going since our last conversation?
+
+**John (Mentee):** Honestly, still struggling. I keep saying yes to too many meetings and then I don't have focused time for the strategic work you mentioned.
+
+**Sarah:** I remember we talked about blocking calendar time. Have you tried that?
+
+**John:** I set up a few blocks but then people just book over them anyway. I guess I'm not being firm enough about protecting that time.
+
+**Sarah:** That's exactly the issue. You need to start treating your focus blocks like you would treat a client meeting. Would you cancel a client meeting for someone else's random request?
+
+**John:** No, definitely not.
+
+**Sarah:** Right. So here's what I want you to try this week. Every Monday morning, block out three 2-hour focus sessions for the week. Make them recurring meetings with yourself, and put them in conference rooms if you have to. Then when someone asks to meet during those times, you say 'I'm not available then, but I have these other slots open.'
+
+**John:** That makes sense. I think I'm just worried about seeming unresponsive or difficult to work with.
+
+**Sarah:** I get that. But think about it this way - when you're constantly reactive and don't have time for strategic thinking, how helpful are you really being to your team? They need you to be thinking ahead, not just responding to whatever's urgent today.
+
+**John:** You're right. And I've definitely noticed that the weeks when I do get focus time, I come up with much better solutions.
+
+**Sarah:** Exactly. And here's another thing to try - start delegating more. You mentioned your team members asking you questions they could probably figure out themselves. Next time someone asks something that isn't truly urgent, try saying 'What approaches have you already considered?' or 'What would you do if I wasn't available?' This helps them develop problem-solving skills and gives you back time.
+
+**John:** That's a good framework. I tend to just jump in and solve things because it feels faster in the moment.
+
+**Sarah:** Which creates a cycle where they depend on you more and more. Break that cycle by coaching them through the thinking process instead of just giving answers.
+
+**John:** Okay, so to summarize - protect my calendar time like client meetings, and coach my team instead of just solving their problems directly.
+
+**Sarah:** Perfect. And let's add one more thing - I want you to track your energy levels throughout the day for the next two weeks. Notice when you feel most focused and creative, and try to align your most important work with those natural energy peaks.
+
+**John:** Good idea. I suspect I'm more creative in the mornings but I've been using that time for emails.
+
+**Sarah:** Classic mistake. Email is reactive work. Save your peak energy for proactive, strategic thinking. Your future self will thank you.
+
+---
+
+## Key Insights This Demo Will Extract:
+
+1. **Advice Given:**
+   - Protect calendar time like client meetings
+   - Coach team instead of solving problems directly  
+   - Track energy levels and align important work with peak times
+   - Use conference rooms to protect focus blocks
+   - Ask "What approaches have you considered?" to develop team
+
+2. **Behavioral Patterns:**
+   - People-pleasing tendency (worried about seeming difficult)
+   - Reactive work style (jumps in to solve vs coaching)
+   - Email during peak creative hours (misaligned energy use)
+
+3. **Implementation Barriers:**
+   - Fear of appearing unresponsive
+   - Habit of immediate problem-solving
+   - Lack of boundary enforcement
+
+4. **Success Metrics:**
+   - Hours of protected focus time per week
+   - Number of coaching conversations vs direct solutions
+   - Energy alignment score (peak work during peak energy)
+
+5. **Emotional Context:**
+   - Moderate motivation (7/10)
+   - Low confidence initially (6/10)
+   - High excitement about energy tracking (8/10)
+   - Main concern: Team perception
+
+This demo conversation showcases classic professional development challenges and provides clear, actionable advice that MentorIQ can turn into a structured implementation plan with calendar integration and progress tracking.

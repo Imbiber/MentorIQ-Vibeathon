@@ -1,0 +1,12 @@
+For demo purposes:
+
+1. Navigate to http://localhost:8080/upload
+2. Upload any audio file (MP3, WAV, etc.)
+3. Watch the AI process it in real-time
+4. See generated insights and action plans
+
+Sample files to test with:
+- Any meeting recording
+- Voice memos
+- Podcast clips
+- Even music files will work for demo (they'll get realistic mentor insights)

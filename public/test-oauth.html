@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google OAuth Test</title>
+</head>
+<body>
+    <h1>Quick Google OAuth Test</h1>
+    <button onclick="testGoogleAuth()">Test Google OAuth</button>
+    <div id="result"></div>
+
+    <script>
+        function testGoogleAuth() {
+            const clientId = '542756320480-glsal5u9qait02m8ih42f53di9pb4vlo.apps.googleusercontent.com';
+            const redirectUri = 'http://localhost:8080/auth/google/callback';
+            const scope = 'https://www.googleapis.com/auth/calendar';
+            
+            const authUrl = `https://accounts.google.com/oauth2/v2/auth?` +
+                `client_id=${encodeURIComponent(clientId)}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `scope=${encodeURIComponent(scope)}&` +
+                `response_type=token&` +
+                `state=test123`;
+            
+            document.getElementById('result').innerHTML = 
+                `<p>Opening OAuth popup...</p><p><a href="${authUrl}" target="_blank">Or click here manually</a></p>`;
+            
+            const popup = window.open(authUrl, 'google-oauth', 'width=500,height=600');
+            
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'GOOGLE_OAUTH_SUCCESS') {
+                    document.getElementById('result').innerHTML = 
+                        '<p style="color: green;">✅ OAuth Success! Token received.</p>';
+                    popup?.close();
+                } else if (event.data.type === 'GOOGLE_OAUTH_ERROR') {
+                    document.getElementById('result').innerHTML = 
+                        `<p style="color: red;">❌ OAuth Error: ${event.data.error}</p>`;
+                    popup?.close();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
