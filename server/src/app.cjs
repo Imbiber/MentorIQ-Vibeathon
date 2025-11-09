@@ -591,6 +591,20 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.join(__dirname, '../../dist');
+  
+  app.use(express.static(distPath));
+  
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/auth') || req.path.startsWith('/health')) {
+      return next();
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
+
 // Error handling
 app.use((error, req, res, next) => {
   // Unhandled server error
@@ -598,8 +612,10 @@ app.use((error, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`MentorIQ API server running on port ${PORT}`);
+const startPort = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 3001);
+app.listen(startPort, '0.0.0.0', () => {
+  console.log(`MentorIQ API server running on port ${startPort}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`File uploads directory: server/uploads/`);
 
   // Initialize with empty tokens for fresh OAuth flow

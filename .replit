@@ -7,8 +7,8 @@ channel = "stable-25_05"
 
 [deployment]
 deploymentTarget = "vm"
-run = ["npm", "run", "dev:full"]
-build = ["npm", "run", "build"]
+run = ["sh", "-c", "NODE_ENV=production PORT=5000 npm run start"]
+build = ["sh", "-c", "npm run build && npx prisma generate"]
 
 [workflows]
 runButton = "Project"
