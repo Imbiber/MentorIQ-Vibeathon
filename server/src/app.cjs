@@ -591,25 +591,35 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '../../dist');
-  
-  app.use(express.static(distPath));
-  
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/auth') || req.path.startsWith('/health')) {
-      return next();
-    }
-    res.sendFile(path.join(distPath, 'index.html'));
-  });
-}
-
 // Error handling
 app.use((error, req, res, next) => {
-  // Unhandled server error
+  console.error('Server error:', error);
   res.status(500).json({ error: 'Internal server error' });
 });
+
+// Serve static files in production (must be last!)
+if (process.env.NODE_ENV === 'production') {
+  const fs = require('fs');
+  const distPath = path.join(__dirname, '../../dist');
+  
+  // Check if dist directory exists
+  if (fs.existsSync(distPath)) {
+    console.log('📁 Serving static files from:', distPath);
+    app.use(express.static(distPath));
+    
+    // Catch-all route for SPA (must be last!)
+    app.get('*', (req, res) => {
+      const indexPath = path.join(distPath, 'index.html');
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        res.status(404).send('Frontend not built');
+      }
+    });
+  } else {
+    console.warn('⚠️  Dist directory not found at:', distPath);
+  }
+}
 
 // Start server
 const startPort = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 3001);
