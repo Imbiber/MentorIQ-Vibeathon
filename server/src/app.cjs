@@ -195,7 +195,7 @@ app.post('/auth/google/exchange', async (req, res) => {
 });
 
 // File upload endpoint
-app.post('/api/upload', upload.single('meeting'), (req, res) => {
+app.post('/api/upload', upload.single('audio'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
