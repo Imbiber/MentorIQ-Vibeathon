@@ -7,13 +7,13 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "0.0.0.0",
-    port: 8080,
-    allowedHosts: ['.replit.dev', '.repl.co'],
+    port: 5000,
+    allowedHosts: true,
     hmr: process.env.REPLIT_DEV_DOMAIN ? {
       protocol: 'wss',
       host: process.env.REPLIT_DEV_DOMAIN,
       clientPort: 443,
-    } : true, // Use default HMR when not on Replit
+    } : true,
     proxy: {
       '/api': {
         target: 'http://localhost:3001',
@@ -23,8 +23,6 @@ export default defineConfig(({ mode }) => ({
         target: 'http://localhost:3001',
         changeOrigin: true,
       },
-      // Note: /auth/google/callback and /auth/google/popup-callback
-      // are NOT proxied - they're handled by React Router
     },
   },
   plugins: [
