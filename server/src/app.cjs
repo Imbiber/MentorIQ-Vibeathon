@@ -607,8 +607,16 @@ if (process.env.NODE_ENV === 'production') {
     console.log('📁 Serving static files from:', distPath);
     app.use(express.static(distPath));
     
-    // Catch-all route for SPA (must be last!)
-    app.get('*', (req, res) => {
+    // SPA fallback - serve index.html for all non-API routes
+    app.use((req, res, next) => {
+      // Skip API routes
+      if (req.path.startsWith('/api') || 
+          req.path.startsWith('/auth') || 
+          req.path.startsWith('/health')) {
+        return next();
+      }
+      
+      // Serve index.html for all other routes
       const indexPath = path.join(distPath, 'index.html');
       if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
