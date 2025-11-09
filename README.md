@@ -364,5 +364,3 @@ For issues, questions, or feedback:
 - Contact: [Your email or contact info]
 
 ---
-
-**Built with ❤️ for the MCP Hackathon**
