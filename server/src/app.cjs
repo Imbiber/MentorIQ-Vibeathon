@@ -601,25 +601,48 @@ app.use((error, req, res, next) => {
 if (process.env.NODE_ENV === 'production') {
   const fs = require('fs');
   const distPath = path.join(__dirname, '../../dist');
+  const indexPath = path.join(distPath, 'index.html');
   
-  // Check if dist directory exists
+  // Cache index.html during boot for fast health checks
+  let cachedIndexHtml = null;
+  if (fs.existsSync(indexPath)) {
+    try {
+      cachedIndexHtml = fs.readFileSync(indexPath, 'utf8');
+      console.log('✅ Cached index.html for fast health checks');
+    } catch (error) {
+      console.warn('⚠️  Failed to cache index.html:', error.message);
+    }
+  } else {
+    console.warn('⚠️  index.html not found at:', indexPath);
+  }
+  
+  // Fast root handler for health checks (before express.static)
+  app.get('/', (req, res) => {
+    if (cachedIndexHtml) {
+      res.type('text/html').send(cachedIndexHtml);
+    } else {
+      res.status(200).send('MentorIQ API is running');
+    }
+  });
+  
+  // Serve static assets
   if (fs.existsSync(distPath)) {
     console.log('📁 Serving static files from:', distPath);
     app.use(express.static(distPath));
     
     // SPA fallback - serve index.html for all non-API routes
     app.use((req, res, next) => {
-      // Skip API routes
-      if (req.path.startsWith('/api') || 
+      // Skip API routes and root (already handled)
+      if (req.path === '/' ||
+          req.path.startsWith('/api') || 
           req.path.startsWith('/auth') || 
           req.path.startsWith('/health')) {
         return next();
       }
       
-      // Serve index.html for all other routes
-      const indexPath = path.join(distPath, 'index.html');
-      if (fs.existsSync(indexPath)) {
-        res.sendFile(indexPath);
+      // Serve cached index.html for all other routes
+      if (cachedIndexHtml) {
+        res.type('text/html').send(cachedIndexHtml);
       } else {
         res.status(404).send('Frontend not built');
       }
