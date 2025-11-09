@@ -30,7 +30,7 @@ export function FileUpload({ onUpload, onUploadComplete, className }: FileUpload
 
       // Upload to API
       const formData = new FormData()
-      formData.append('audio', file)
+      formData.append('meeting', file)
 
       const response = await fetch('/api/upload', {
         method: 'POST',
