@@ -591,20 +591,14 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Error handling
-app.use((error, req, res, next) => {
-  console.error('Server error:', error);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
-// Serve static files in production (must be last!)
+// Setup production static file serving BEFORE error handlers
+let cachedIndexHtml = null;
 if (process.env.NODE_ENV === 'production') {
   const fs = require('fs');
   const distPath = path.join(__dirname, '../../dist');
   const indexPath = path.join(distPath, 'index.html');
   
   // Cache index.html during boot for fast health checks
-  let cachedIndexHtml = null;
   if (fs.existsSync(indexPath)) {
     try {
       cachedIndexHtml = fs.readFileSync(indexPath, 'utf8');
@@ -616,41 +610,58 @@ if (process.env.NODE_ENV === 'production') {
     console.warn('⚠️  index.html not found at:', indexPath);
   }
   
-  // Fast root handler for health checks (before express.static)
-  app.get('/', (req, res) => {
-    if (cachedIndexHtml) {
-      res.type('text/html').send(cachedIndexHtml);
-    } else {
-      res.status(200).send('MentorIQ API is running');
-    }
-  });
-  
   // Serve static assets
   if (fs.existsSync(distPath)) {
     console.log('📁 Serving static files from:', distPath);
     app.use(express.static(distPath));
-    
-    // SPA fallback - serve index.html for all non-API routes
-    app.use((req, res, next) => {
-      // Skip API routes and root (already handled)
-      if (req.path === '/' ||
-          req.path.startsWith('/api') || 
-          req.path.startsWith('/auth') || 
-          req.path.startsWith('/health')) {
-        return next();
-      }
-      
-      // Serve cached index.html for all other routes
-      if (cachedIndexHtml) {
-        res.type('text/html').send(cachedIndexHtml);
-      } else {
-        res.status(404).send('Frontend not built');
-      }
-    });
   } else {
     console.warn('⚠️  Dist directory not found at:', distPath);
   }
 }
+
+// Fast root handler for Replit health checks (MUST come before error handlers)
+app.get('/', (req, res) => {
+  const startTime = Date.now();
+  if (process.env.NODE_ENV === 'production' && cachedIndexHtml) {
+    res.type('text/html').send(cachedIndexHtml);
+  } else if (process.env.NODE_ENV === 'production') {
+    // Fallback if cache failed - always return 200 OK
+    res.status(200).send('MentorIQ is running');
+  } else {
+    // In development, let Vite handle it
+    res.status(200).json({ 
+      status: 'OK', 
+      message: 'MentorIQ API - Development Mode',
+      responseTime: Date.now() - startTime + 'ms'
+    });
+  }
+  console.log(`✅ Health check responded in ${Date.now() - startTime}ms`);
+});
+
+// SPA fallback for other routes (only in production)
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    // Skip API routes
+    if (req.path.startsWith('/api') || 
+        req.path.startsWith('/auth') || 
+        req.path.startsWith('/health')) {
+      return next();
+    }
+    
+    // Serve cached index.html for all other routes
+    if (cachedIndexHtml) {
+      res.type('text/html').send(cachedIndexHtml);
+    } else {
+      res.status(404).send('Frontend not built');
+    }
+  });
+}
+
+// Error handling (MUST be last!)
+app.use((error, req, res, next) => {
+  console.error('Server error:', error);
+  res.status(500).json({ error: 'Internal server error' });
+});
 
 // Start server
 const startPort = process.env.PORT || (process.env.NODE_ENV === 'production' ? 5000 : 3001);
