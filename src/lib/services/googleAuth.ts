@@ -32,7 +32,7 @@ export class GoogleAuthService {
   async authenticate(): Promise<boolean> {
     this.ensureConfigured();
     const scope = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events';
-    const redirectUri = 'http://localhost:8080/auth/google/callback';
+    const redirectUri = `${window.location.origin}/auth/google/callback`;
     const state = this.generateState();
     
     // Store state and return URL for security
@@ -75,7 +75,7 @@ export class GoogleAuthService {
         },
         body: JSON.stringify({ 
           code,
-          redirect_uri: 'http://localhost:8080/auth/google/callback'
+          redirect_uri: `${window.location.origin}/auth/google/callback`
         })
       });
 

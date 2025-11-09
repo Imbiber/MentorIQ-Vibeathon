@@ -8,6 +8,17 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Determine base URL based on environment
+const getBaseUrl = () => {
+  if (process.env.REPLIT_DEV_DOMAIN) {
+    return `https://${process.env.REPLIT_DEV_DOMAIN}`;
+  }
+  return process.env.VITE_APP_URL || 'http://localhost:8080';
+};
+
+const BASE_URL = getBaseUrl();
+console.log('🌐 Base URL:', BASE_URL);
+
 // Middleware
 const allowedOrigins = [
   'http://localhost:5000',
@@ -97,7 +108,7 @@ app.get('/auth/google/callback', async (req, res) => {
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
         code,
         grant_type: 'authorization_code',
-        redirect_uri: 'http://localhost:8080/auth/google/callback'
+        redirect_uri: `${BASE_URL}/auth/google/callback`
       })
     });
 
@@ -114,7 +125,7 @@ app.get('/auth/google/callback', async (req, res) => {
     // OAuth token stored successfully
 
     // Redirect back to frontend with success message
-    res.redirect(`http://localhost:8080/auth/callback?success=true&userId=${encodeURIComponent(userId)}`);
+    res.redirect(`${BASE_URL}/auth/callback?success=true&userId=${encodeURIComponent(userId)}`);
 
   } catch (error) {
     res.status(500).send('OAuth callback failed');
@@ -142,7 +153,7 @@ app.post('/auth/google/exchange', async (req, res) => {
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
         code,
         grant_type: 'authorization_code',
-        redirect_uri: redirect_uri || 'http://localhost:8080/auth/google/callback'
+        redirect_uri: redirect_uri || `${BASE_URL}/auth/google/callback`
       })
     });
 
@@ -446,7 +457,7 @@ app.post('/api/calendar/create-event', async (req, res) => {
         // we'll use direct Google OAuth as a fallback while keeping Descope auth
         const googleOAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
           `client_id=${process.env.GOOGLE_CLIENT_ID}&` +
-          `redirect_uri=${encodeURIComponent('http://localhost:8080/auth/google/callback')}&` +
+          `redirect_uri=${encodeURIComponent(`${BASE_URL}/auth/google/callback`)}&` +
           `response_type=code&` +
           `scope=${encodeURIComponent('https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events')}&` +
           `access_type=offline&` +
