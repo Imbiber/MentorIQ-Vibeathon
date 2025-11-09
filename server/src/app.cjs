@@ -62,7 +62,7 @@ const upload = multer({
   limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit
   fileFilter: (req, file, cb) => {
     // Accept audio and video files
-    const allowedTypes = /\.(mp3|wav|m4a|mp4|mov|avi|webm|ogg|aiff|flac|aac|wma)$/i;
+    const allowedTypes = /\.(mp3|wav|m4a|mp4|mov|avi|webm|ogg|aiff|flac|aac|wma|mkv|wmv|flv|3gp|mpeg|mpg|opus|alac)$/i;
     if (allowedTypes.test(file.originalname)) {
       cb(null, true);
     } else {
